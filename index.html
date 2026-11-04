@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e1320">
+  <meta name="description" content="LINUX WORD: videojuego educativo para descubrir comandos reales de Linux Debian a partir de pistas técnicas.">
+  <title>LINUX WORD · Adivina el comando</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230e1320'/%3E%3Crect x='8' y='8' width='22' height='22' rx='4' fill='%232e9e5b'/%3E%3Crect x='34' y='8' width='22' height='22' rx='4' fill='%23d6a82a'/%3E%3Crect x='8' y='34' width='22' height='22' rx='4' fill='%234a5160'/%3E%3Crect x='34' y='34' width='22' height='22' rx='4' fill='%232e9e5b'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/board.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Saltar al contenido</a>
+
+  <header class="topbar" id="topbar">
+    <button type="button" class="brand" id="btn-brand" aria-label="Ir al inicio de LINUX WORD">
+      <span class="brand-mark" aria-hidden="true"><i class="c-g"></i><i class="c-y"></i><i class="c-x"></i><i class="c-g"></i></span>
+      <span class="brand-name">LINUX WORD</span>
+    </button>
+    <div class="topbar-stats" aria-live="off">
+      <span class="chip" title="Puntuación acumulada (suma de las mejores por desafío)">★ <strong id="top-score">0</strong></span>
+      <span class="chip" title="Racha de victorias">🔥 <strong id="top-streak">0</strong></span>
+    </div>
+    <nav class="topbar-nav" aria-label="Navegación principal">
+      <button type="button" class="icon-btn" id="nav-levels" aria-label="Seleccionar nivel" title="Niveles">▦</button>
+      <button type="button" class="icon-btn" id="nav-glossary" aria-label="Glosario" title="Glosario">📖</button>
+      <button type="button" class="icon-btn" id="nav-help" aria-label="Cómo jugar" title="Cómo jugar">?</button>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+
+    <!-- INICIO -->
+    <section class="screen" id="screen-home" aria-labelledby="home-title">
+      <div class="hero">
+        <h1 id="home-title" class="logo" aria-label="LINUX WORD">
+          <span class="logo-tiles" aria-hidden="true"><b class="t-g">L</b><b class="t-y">I</b><b class="t-x">N</b><b class="t-g">U</b><b class="t-y">X</b></span>
+          <span class="logo-word" aria-hidden="true">WORD</span>
+        </h1>
+        <p class="subtitle">Adivina el comando</p>
+        <p class="tagline">Lee la pista, razona qué herramienta de Linux Debian resuelve el problema y escribe su nombre en seis intentos.</p>
+      </div>
+
+      <div class="alias-row">
+        <label for="alias">Alias (opcional)</label>
+        <input id="alias" type="text" maxlength="20" autocomplete="off" spellcheck="false" placeholder="Tu apodo">
+      </div>
+
+      <div class="menu">
+        <button type="button" class="btn btn-primary" id="btn-play">Jugar</button>
+        <button type="button" class="btn" id="btn-continue">Continuar</button>
+        <button type="button" class="btn" id="btn-levels">Seleccionar nivel</button>
+        <button type="button" class="btn" id="btn-how">Cómo jugar</button>
+        <button type="button" class="btn" id="btn-glossary">Glosario</button>
+      </div>
+
+      <div class="stats" role="group" aria-label="Resumen de progreso">
+        <div class="stat stat-wide">
+          <span class="stat-label">Progreso total</span>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="total-bar"><div class="progress-fill" id="total-fill"></div></div>
+          <span class="stat-value" id="total-pct">0 %</span>
+        </div>
+        <div class="stat"><span class="stat-label">Desafíos ganados</span><span class="stat-value"><span id="stat-won">0</span> de 50</span></div>
+        <div class="stat"><span class="stat-label">Puntuación acumulada</span><span class="stat-value" id="stat-score">0</span></div>
+        <div class="stat"><span class="stat-label">Racha de victorias</span><span class="stat-value"><span id="stat-streak">0</span> <small>(mejor: <span id="stat-best-streak">0</span>)</small></span></div>
+      </div>
+
+      <details class="settings">
+        <summary>Preferencias y datos</summary>
+        <div class="settings-body">
+          <label class="check"><input type="checkbox" id="pref-colorblind"> Paleta de alto contraste (azul / naranja)</label>
+          <label class="check"><input type="checkbox" id="pref-study"> Modo de consulta educativa: el glosario muestra todas las fichas, incluidas las de desafíos sin completar</label>
+          <p class="note" id="storage-note">El progreso se guarda únicamente en este navegador (localStorage). No se sincroniza con otros dispositivos ni se envía a ningún docente o servidor.</p>
+          <button type="button" class="btn btn-danger" id="btn-reset">Reiniciar partida…</button>
+        </div>
+      </details>
+    </section>
+
+    <!-- CÓMO JUGAR -->
+    <section class="screen" id="screen-help" hidden aria-labelledby="help-title">
+      <h2 id="help-title" class="screen-title">Cómo jugar</h2>
+      <div class="panel prose">
+        <p>Cada desafío describe una situación real de administración de sistemas. Tu tarea es <strong>deducir el comando de Linux Debian</strong> que la resuelve y escribirlo. No se ejecuta nada: aquí solo se razona.</p>
+        <ul>
+          <li>El tablero tiene <strong>una casilla por carácter</strong> del comando. Los guiones ocupan su propia casilla.</li>
+          <li>Tienes <strong>6 intentos</strong>. Escribe con el teclado físico o con el virtual y confirma con <kbd>Enter</kbd>.</li>
+          <li>Solo cuentan los comandos del diccionario del juego con la longitud exacta. Si la longitud es incorrecta o el comando no está en el diccionario, <strong>no pierdes el intento</strong>.</li>
+          <li>Un comando real de la longitud correcta que no es la solución sí gasta un intento.</li>
+        </ul>
+        <h3>Colores y símbolos</h3>
+        <div class="legend">
+          <div class="legend-item"><span class="tile sample correct"><span class="tile-char">g</span><span class="tile-badge">✓</span></span><span><strong>Verde ✓</strong> · carácter correcto en su posición.</span></div>
+          <div class="legend-item"><span class="tile sample present"><span class="tile-char">r</span><span class="tile-badge">↔</span></span><span><strong>Amarillo ↔</strong> · está en el comando, pero en otra posición.</span></div>
+          <div class="legend-item"><span class="tile sample absent"><span class="tile-char">x</span><span class="tile-badge">✕</span></span><span><strong>Gris ✕</strong> · no está, o ya no quedan más apariciones de ese carácter.</span></div>
+        </div>
+        <p>Las letras repetidas se evalúan como en Wordle: si el comando tiene una sola «s» y escribes tres, solo una puede ser verde o amarilla.</p>
+        <h3>Ayudas y puntos</h3>
+        <ul>
+          <li><strong>Pista conceptual</strong> (−10 puntos) y <strong>pista avanzada</strong> (−15 puntos): son opcionales y nunca revelan el nombre.</li>
+          <li>Puntos por acierto: 1.º intento 100 · 2.º 80 · 3.º 60 · 4.º 40 · 5.º 20 · 6.º 10. Perder da 0 y no cuenta como victoria.</li>
+          <li>Se guarda la <strong>mejor puntuación</strong> de cada desafío; repetirlo no suma de nuevo.</li>
+          <li>Para desbloquear el nivel siguiente debes <strong>ganar los 5 desafíos</strong> del anterior.</li>
+        </ul>
+        <div class="help-actions">
+          <button type="button" class="btn btn-primary" id="btn-help-start">Entendido, a jugar</button>
+          <button type="button" class="btn" id="btn-help-back">Volver</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NIVELES -->
+    <section class="screen" id="screen-levels" hidden aria-labelledby="levels-title">
+      <div class="screen-head">
+        <h2 id="levels-title" class="screen-title">Seleccionar nivel</h2>
+        <button type="button" class="btn btn-small" id="btn-levels-home">Inicio</button>
+      </div>
+      <div class="level-grid" id="level-grid"></div>
+
+      <div class="panel" id="level-detail" hidden>
+        <div class="screen-head">
+          <h3 id="detail-title" class="detail-title"></h3>
+          <button type="button" class="btn btn-small" id="btn-detail-close">Cerrar</button>
+        </div>
+        <p id="detail-desc" class="muted"></p>
+        <ol class="challenge-list" id="challenge-list"></ol>
+      </div>
+    </section>
+
+    <!-- JUEGO -->
+    <section class="screen" id="screen-game" hidden aria-labelledby="game-title">
+      <div class="game-head">
+        <button type="button" class="btn btn-small" id="btn-game-back" aria-label="Volver a los niveles">← Niveles</button>
+        <div class="game-title-wrap">
+          <h2 id="game-title" class="game-title">Nivel 1 · Explorador de archivos</h2>
+          <p class="game-sub" id="game-sub">Desafío 1 de 5</p>
+        </div>
+        <div class="attempts" id="attempts" aria-live="polite">
+          <span class="attempts-label">Intentos restantes</span>
+          <span class="attempts-dots" id="attempts-dots" aria-hidden="true"></span>
+          <strong class="attempts-num" id="attempts-num">6</strong>
+        </div>
+      </div>
+
+      <div class="clue" id="clue-card">
+        <span class="clue-tag">Pista</span>
+        <p id="clue-text"></p>
+      </div>
+
+      <div class="hint-bar">
+        <button type="button" class="btn btn-small btn-hint" id="btn-hint-concept"></button>
+        <button type="button" class="btn btn-small btn-hint" id="btn-hint-advanced"></button>
+        <span class="potential" id="potential" title="Puntos que obtendrías si aciertas en el próximo intento">Valor actual: <strong id="potential-num">100</strong> pts</span>
+      </div>
+      <div class="hints" id="hints" aria-live="polite"></div>
+
+      <div class="board-wrap">
+        <div class="board" id="board" role="group" aria-label="Tablero de intentos"></div>
+      </div>
+      <p class="message" id="message" role="status" aria-live="polite"></p>
+
+      <div class="keyboard" id="keyboard" aria-label="Teclado virtual"></div>
+
+      <div class="result" id="result" hidden tabindex="-1" aria-live="polite">
+        <div class="result-banner" id="result-banner"></div>
+        <p class="result-score" id="result-score"></p>
+        <p class="result-answer">Comando: <code id="result-answer"></code></p>
+        <div class="result-explain">
+          <h3>Explicación</h3>
+          <p id="result-explain"></p>
+        </div>
+        <div class="result-actions">
+          <button type="button" class="btn btn-primary" id="btn-next">Siguiente desafío</button>
+          <button type="button" class="btn" id="btn-retry">Repetir desafío</button>
+          <button type="button" class="btn" id="btn-result-levels">Ver niveles</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- GLOSARIO -->
+    <section class="screen" id="screen-glossary" hidden aria-labelledby="glossary-title">
+      <div class="screen-head">
+        <h2 id="glossary-title" class="screen-title">Glosario</h2>
+        <button type="button" class="btn btn-small" id="btn-glossary-home">Inicio</button>
+      </div>
+      <p class="muted" id="glossary-note"></p>
+      <div class="search-row">
+        <label for="glossary-search" class="sr-only">Buscar en el glosario</label>
+        <input id="glossary-search" type="search" placeholder="Buscar comando, categoría o palabra clave…" autocomplete="off" spellcheck="false">
+      </div>
+      <p class="muted" id="glossary-count" aria-live="polite"></p>
+      <div class="gl-list" id="glossary-list"></div>
+    </section>
+  </main>
+
+  <div class="toast-region" id="toast-region"></div>
+  <div class="sr-only" id="sr-status" aria-live="polite"></div>
+
+  <!-- Confirmación genérica -->
+  <div class="modal" id="confirm-modal" hidden>
+    <div class="modal-card" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+      <h2 id="confirm-title">¿Confirmar?</h2>
+      <p id="confirm-text"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="confirm-cancel">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirm-ok">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nivel desbloqueado -->
+  <div class="modal" id="unlock-modal" hidden>
+    <div class="modal-card unlock-card" role="dialog" aria-modal="true" aria-labelledby="unlock-title">
+      <div class="unlock-anim" aria-hidden="true">
+        <span class="unlock-lock">🔒</span><span class="unlock-open">🔓</span>
+      </div>
+      <h2 id="unlock-title">¡Nivel completado!</h2>
+      <p id="unlock-text"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="unlock-later">Más tarde</button>
+        <button type="button" class="btn btn-primary" id="unlock-go">Ir al nuevo nivel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>LINUX WORD es un proyecto educativo independiente, sin afiliación con aplicaciones de terceros. No ejecuta comandos: solo enseña a razonarlos.</p>
+  </footer>
+
+  <script src="js/levels.js"></script>
+  <script src="js/word-validator.js"></script>
+  <script src="js/scoring.js"></script>
+  <script src="js/game-engine.js"></script>
+  <script src="js/hints.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/keyboard.js"></script>
+  <script src="js/glossary.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
