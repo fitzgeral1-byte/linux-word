@@ -1,0 +1,67 @@
+/* responsive.css — tabletas, celulares y pantallas bajas */
+
+/* Tabletas y escritorio pequeño */
+@media (max-width: 760px) {
+  main { padding: .8rem; }
+  .level-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Celulares */
+@media (max-width: 560px) {
+  .topbar { gap: .4rem; padding-left: .6rem; padding-right: .6rem; }
+  .brand-name { display: none; }
+  .topbar-stats { margin-left: auto; }
+  .chip { padding: .1rem .55rem; font-size: .82rem; }
+  .icon-btn { width: 38px; height: 38px; }
+
+  main { padding: .6rem .6rem 1rem; }
+  .menu { grid-template-columns: 1fr 1fr; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stats .stat:last-child { grid-column: 1 / -1; }
+  .level-grid { gap: .5rem; }
+  .level-card { padding: .65rem .7rem; min-height: 120px; }
+
+  .game-head { gap: .5rem; }
+  .game-title { font-size: 1rem; }
+  .attempts { margin-left: auto; padding: .2rem .6rem; }
+  .attempts-label { display: none; }
+  .clue { padding: .65rem .8rem; }
+  .clue p { font-size: 1rem; }
+  .potential { margin-left: 0; width: 100%; }
+
+  .board { --avail: min(100vw - 1.2rem, 700px); --gap: 5px; }
+  .board.dense { --gap: 2px; }
+
+  .keyboard { gap: 5px; }
+  .kb-row { gap: 3px; }
+  .key { height: 48px; font-size: .92rem; border-radius: 6px; }
+  .key-wide { font-size: .58rem; flex: 1.5 1 0; letter-spacing: -.02em; }
+
+  .gl-field { grid-template-columns: 1fr; gap: .1rem; }
+  .result-actions .btn { flex: 1 1 100%; }
+  .toast-region { top: 3.8rem; }
+}
+
+/* Celulares muy estrechos */
+@media (max-width: 360px) {
+  .key { height: 44px; font-size: .85rem; }
+  .key-wide { font-size: .52rem; }
+  .menu, .stats { grid-template-columns: 1fr; }
+  .stats .stat:last-child { grid-column: auto; }
+}
+
+/* Pantallas bajas (celular en horizontal) */
+@media (max-height: 520px) and (orientation: landscape) {
+  .topbar { position: static; }
+  .key { height: 38px; }
+  .hero { margin: 0 0 .5rem; }
+  .logo-tiles b { width: 38px; height: 38px; font-size: 1.3rem; }
+  .board { --tile: min(40px, calc((var(--avail) - (var(--n) - 1) * var(--gap)) / var(--n))); }
+}
+
+/* Escritorio amplio */
+@media (min-width: 900px) {
+  main { max-width: 820px; }
+  .level-grid { grid-template-columns: repeat(3, 1fr); }
+  .key { height: 58px; }
+}
